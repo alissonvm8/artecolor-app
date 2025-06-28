@@ -16,17 +16,25 @@ df['año'] = df['venta_fecha'].dt.year
 df['mes'] = df['venta_fecha'].dt.month
 df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
-# Filtros
+# --- Filtros
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
-mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", sorted(df['mes'].unique()))
 
+# Desactivar el filtro de mes si se elige "Todos"
+if año_seleccionado != "Todos":
+    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
+else:
+    mes_seleccionado = None
+    st.sidebar.markdown("👉 *Filtro de mes no disponible cuando se selecciona 'Todos los años'*")
+
+# --- Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
+    df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
 else:
     df_anual = df.copy()
-
-df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    df_filtrado = df.copy()  # Se usa para gráfico 2 y 3 (sin filtrar por mes)
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
@@ -71,7 +79,11 @@ st.plotly_chart(fig3, use_container_width=True)
 
 # --- Gráfico 4: Clientes con Mayor Monto Comprado
 st.subheader("👤 Clientes con Mayor Monto Comprado")
-clientes_top = df_anual.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+if año_seleccionado != "Todos":
+    clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+else:
+    clientes_top = df_anual.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+
 clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
 fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
