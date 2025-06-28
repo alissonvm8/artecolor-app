@@ -89,3 +89,24 @@ fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
 
+# --- Gráfico 5: Ingresos Netos vs Pagos Recibidos por Mes
+st.subheader("💰 Ingresos Netos vs Pagos Recibidos")
+
+# Agrupación por mes y año
+ingresos_vs_pagos = df_anual.groupby(df_anual['venta_fecha'].dt.to_period("M"))[['venta_valor_neto', 'venta_valor_pagado']].sum().reset_index()
+ingresos_vs_pagos['venta_fecha'] = ingresos_vs_pagos['venta_fecha'].astype(str)
+
+fig5 = px.line(ingresos_vs_pagos, x='venta_fecha',
+               y=['venta_valor_neto', 'venta_valor_pagado'],
+               labels={
+                   'value': 'USD',
+                   'variable': 'Tipo de Valor',
+                   'venta_fecha': 'Mes'
+               },
+               title='Comparación Mensual: Ventas Netas vs Pagos Recibidos')
+
+fig5.update_layout(legend_title_text='')
+
+st.plotly_chart(fig5, use_container_width=True)
+
+
