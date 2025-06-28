@@ -19,14 +19,25 @@ df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 # Filtros
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
-mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", sorted(df['mes'].unique()))
+
+if año_seleccionado == "Todos":
+    mes_seleccionado = None
+    st.sidebar.selectbox("Selecciona el mes", ["(Seleccione un año específico)"], disabled=True)
+else:
+    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
+
 
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
 else:
     df_anual = df.copy()
 
-df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+if año_seleccionado == "Todos":
+    df_filtrado = df.copy()
+else:
+    df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
