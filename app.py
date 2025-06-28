@@ -10,7 +10,9 @@ st.subheader("Visualización de indicadores clave de ventas")
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    return df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
+    df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
+    return df
+
     
 
 df = cargar_datos()
