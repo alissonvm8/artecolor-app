@@ -72,7 +72,11 @@ st.plotly_chart(fig2, use_container_width=True)
 
 # --- Gráfico 3: Top 10 Productos Más Vendidos
 st.subheader("📦 Top 10 Productos Más Vendidos por Valor")
-productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+if df_filtrado is not None:
+    productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+else:
+    productos_top = df.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+
 productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
 fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
               orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
