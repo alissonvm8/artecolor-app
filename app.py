@@ -8,7 +8,7 @@ st.title("📊 Dashboard de Ventas - Arte Color")
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    return pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"])
+    return  df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
 
 try:
     df = cargar_datos()
