@@ -10,8 +10,6 @@ def cargar_datos():
     return pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
 
 df = cargar_datos()
-
-# Columnas auxiliares
 df['año'] = df['venta_fecha'].dt.year
 df['mes'] = df['venta_fecha'].dt.month
 df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
@@ -19,14 +17,17 @@ df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 # Filtros
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
-mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", sorted(df['mes'].unique()))
 
-if año_seleccionado != "Todos":
-    df_anual = df[df['año'] == año_seleccionado]
-else:
+if año_seleccionado == "Todos":
+    mes_seleccionado = None
+    st.sidebar.selectbox("Selecciona el mes", sorted(df['mes'].unique()), disabled=True)
     df_anual = df.copy()
-
-df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    df_filtrado = df.copy()
+else:
+    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
+    df_anual = df[df['año'] == año_seleccionado]
+    df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
@@ -71,10 +72,11 @@ st.plotly_chart(fig3, use_container_width=True)
 
 # --- Gráfico 4: Clientes con Mayor Monto Comprado
 st.subheader("👤 Clientes con Mayor Monto Comprado")
-clientes_top = df_anual.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
 clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
 fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
+
 
 
