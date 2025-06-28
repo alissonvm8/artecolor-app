@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -16,28 +17,20 @@ df['año'] = df['venta_fecha'].dt.year
 df['mes'] = df['venta_fecha'].dt.month
 df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
-# Filtros
+# --- Filtros ---
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
 if año_seleccionado == "Todos":
+    df_anual = df.copy()
+    df_filtrado = df.copy()
     mes_seleccionado = None
     st.sidebar.selectbox("Selecciona el mes", ["(Seleccione un año específico)"], disabled=True)
 else:
-    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
-    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
-
-
-if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
-else:
-    df_anual = df.copy()
-
-if año_seleccionado == "Todos":
-    df_filtrado = df.copy()
-else:
+    meses_disponibles = sorted(df_anual['mes'].unique())
+    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
     df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
-
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
@@ -67,7 +60,8 @@ with col3:
 
 # --- Gráfico 2: Ventas por Sucursal
 st.subheader("🏬 Ventas por Sucursal")
-ventas_sucursal = df_filtrado.groupby('sucursal_nombre')['detalle_valor_total'].sum().reset_index()
+ventas_sucursal = df_filtrado[df_filtrado['sucursal_nombre'].notna()]\
+    .groupby('sucursal_nombre')['detalle_valor_total'].sum().reset_index()
 fig2 = px.bar(ventas_sucursal, x='sucursal_nombre', y='detalle_valor_total',
               labels={'sucursal_nombre': 'Sucursal', 'detalle_valor_total': 'Ventas ($)'})
 st.plotly_chart(fig2, use_container_width=True)
@@ -87,8 +81,3 @@ clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=Fals
 fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
-
-
-
-
-
