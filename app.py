@@ -19,14 +19,18 @@ df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 # Filtros
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
-mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", sorted(df['mes'].unique()))
 
-if año_seleccionado != "Todos":
-    df_anual = df[df['año'] == año_seleccionado]
-else:
+# Control dinámico del filtro de mes
+if año_seleccionado == "Todos":
+    mes_seleccionado = None
+    st.sidebar.selectbox("Selecciona el mes", ["(Seleccione un año específico)"], disabled=True)
     df_anual = df.copy()
-
-df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    df_filtrado = df.copy()
+else:
+    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
+    df_anual = df[df['año'] == año_seleccionado]
+    df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
@@ -76,7 +80,6 @@ clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=Fals
 fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
-
 
 
 
