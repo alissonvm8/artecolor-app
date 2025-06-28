@@ -16,11 +16,10 @@ df['año'] = df['venta_fecha'].dt.year
 df['mes'] = df['venta_fecha'].dt.month
 df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
-# --- Filtros
+# Filtros
 años_disponibles = sorted(df['año'].unique())
 año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
-# Desactivar el filtro de mes si se elige "Todos"
 if año_seleccionado != "Todos":
     meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
     mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
@@ -28,13 +27,13 @@ else:
     mes_seleccionado = None
     st.sidebar.markdown("👉 *Filtro de mes no disponible cuando se selecciona 'Todos los años'*")
 
-# --- Filtrado de datos
+# Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
     df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
 else:
     df_anual = df.copy()
-    df_filtrado = df.copy()  # Se usa para gráfico 2 y 3 (sin filtrar por mes)
+    df_filtrado = df.copy()
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
@@ -89,24 +88,18 @@ fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
 
-# --- Gráfico 5: Ingresos Netos vs Pagos Recibidos por Mes
+# --- Gráfico 5: Ingresos Netos vs Pagos Recibidos
 st.subheader("💰 Ingresos Netos vs Pagos Recibidos")
-
-# Agrupación por mes y año
 ingresos_vs_pagos = df_anual.groupby(df_anual['venta_fecha'].dt.to_period("M"))[['venta_valor_neto', 'venta_valor_pagado']].sum().reset_index()
 ingresos_vs_pagos['venta_fecha'] = ingresos_vs_pagos['venta_fecha'].astype(str)
 
 fig5 = px.line(ingresos_vs_pagos, x='venta_fecha',
                y=['venta_valor_neto', 'venta_valor_pagado'],
-               labels={
-                   'value': 'USD',
-                   'variable': 'Tipo de Valor',
-                   'venta_fecha': 'Mes'
-               },
+               labels={'value': 'USD', 'variable': 'Tipo de Valor', 'venta_fecha': 'Mes'},
                title='Comparación Mensual: Ventas Netas vs Pagos Recibidos')
 
 fig5.update_layout(legend_title_text='')
-
 st.plotly_chart(fig5, use_container_width=True)
+
 
 
