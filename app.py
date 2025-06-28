@@ -1,34 +1,35 @@
+# app.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Arte Color", layout="wide")
-st.title("📊 Dashboard de Ventas - Arte Color")
+# Título de la app
+st.title("Dashboard de Ventas - Arte Color")
+st.subheader("Visualización de indicadores clave de ventas")
 
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    return  df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
+    return df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
+    
 
-try:
-    df = cargar_datos()
-    df['mes'] = df['venta_fecha'].dt.to_period('M').astype(str)
+df = cargar_datos()
 
-    # Agrupar por mes
-    ventas_por_mes = df.groupby('mes')['detalle_valor_total'].sum().reset_index()
+# Preprocesamiento
+df['mes'] = df['venta_fecha'].dt.to_period('M').astype(str)
+ventas_por_mes = df.groupby('mes')['detalle_valor_total'].sum().reset_index()
 
-    # Gráfico
-    fig = px.bar(ventas_por_mes, x='mes', y='detalle_valor_total',
-                 labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas Totales ($)'},
-                 title='Ventas Totales por Mes')
+# Gráfico de barras
+fig = px.bar(ventas_por_mes, x='mes', y='detalle_valor_total',
+             labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas Totales ($)'},
+             title='Ventas Totales por Mes',
+             color='detalle_valor_total')
 
-    st.plotly_chart(fig)
+st.plotly_chart(fig)
 
-    # Opción para mostrar tabla
-    if st.checkbox("Mostrar tabla de datos"):
-        st.dataframe(ventas_por_mes)
+# Mostrar tabla si se desea
+if st.checkbox("Mostrar tabla de datos"):
+    st.dataframe(ventas_por_mes)
 
-except FileNotFoundError:
-    st.error("❌ Error: No se encontró el archivo 'BDD_ArteColor_Ventas.csv'. Asegúrate de que esté en el repositorio y se llame exactamente así.")
 
 
