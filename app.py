@@ -1,5 +1,3 @@
-, on_bad_lines='skip'
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -10,7 +8,7 @@ st.set_page_config(layout="wide", page_title="Dashboard Arte Color", page_icon="
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"])
+    df = pd.read_csv("BDD_ArteColor_Ventas.csv", parse_dates=["venta_fecha"], on_bad_lines='skip')
     df["mes"] = df["venta_fecha"].dt.month
     df["año"] = df["venta_fecha"].dt.year
     return df
