@@ -55,17 +55,28 @@ else:
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
+
 if año_seleccionado == "Todos":
     ventas_mensuales = df.groupby(['año', df['venta_fecha'].dt.month]).agg({'detalle_valor_total': 'sum'}).reset_index()
     ventas_mensuales.columns = ['año', 'mes', 'detalle_valor_total']
     fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total', color='año',
                    labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'})
 else:
-    ventas_mensuales = df_anual.groupby(df_anual['venta_fecha'].dt.to_period('M')).agg({'detalle_valor_total': 'sum'}).reset_index()
-    ventas_mensuales['venta_fecha'] = ventas_mensuales['venta_fecha'].astype(str)
-    fig1 = px.line(ventas_mensuales, x='venta_fecha', y='detalle_valor_total',
-                   labels={'venta_fecha': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+    if mes_seleccionado:  # si mes está seleccionado, filtra solo ese mes
+        df_mes = df_anual[df_anual['mes'] == mes_seleccionado]
+        total_mes = df_mes.groupby(df_mes['venta_fecha'].dt.day).agg({'detalle_valor_total': 'sum'}).reset_index()
+        total_mes.columns = ['día', 'detalle_valor_total']
+        fig1 = px.bar(total_mes, x='día', y='detalle_valor_total',
+                      labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'},
+                      title=f"Ventas Diarias - {mes_seleccionado}/{año_seleccionado}")
+    else:
+        ventas_mensuales = df_anual.groupby(df_anual['venta_fecha'].dt.month).agg({'detalle_valor_total': 'sum'}).reset_index()
+        ventas_mensuales.columns = ['mes', 'detalle_valor_total']
+        fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total',
+                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+
 st.plotly_chart(fig1, use_container_width=True)
+
 
 # --- KPIs
 st.markdown("### 📌 Indicadores Clave")
