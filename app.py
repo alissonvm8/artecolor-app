@@ -26,7 +26,14 @@ if año_seleccionado != "Todos":
 else:
     mes_seleccionado = None
     st.sidebar.markdown("👉 *Filtro de mes no disponible cuando se selecciona 'Todos los años'*")
-    
+
+with st.sidebar:
+    st.markdown("### 🤖 Asistente de Ventas")
+    components.iframe(
+        "https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
+        height=500
+    )
+
 # Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
