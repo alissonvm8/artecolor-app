@@ -17,29 +17,27 @@ df['año'] = df['venta_fecha'].dt.year
 df['mes'] = df['venta_fecha'].dt.month
 df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
-# Filtros
+# Sidebar: Filtros y Chatbot
 años_disponibles = sorted(df['año'].unique())
-año_seleccionado = st.sidebar.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
-if año_seleccionado != "Todos":
-    meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
-    mes_seleccionado = st.sidebar.selectbox("Selecciona el mes", meses_disponibles)
-else:
-    mes_seleccionado = None
+with st.sidebar:
+    año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
+    if año_seleccionado != "Todos":
+        meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+        mes_seleccionado = st.selectbox("Selecciona el mes", meses_disponibles)
+    else:
+        mes_seleccionado = None
 
-# Chatbot integrado
-
-    with st.sidebar:
-        st.markdown("---")
-        st.markdown("### 🤖 Asistente de Ventas")
-        st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
-    
+    st.markdown("---")
+    st.markdown("### 🤖 Asistente de Ventas")
+    st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
     components.iframe(
         src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
         height=600,
         width=300
     )
+
 # Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
@@ -50,14 +48,13 @@ else:
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
-
 if año_seleccionado == "Todos":
     ventas_mensuales = df.groupby(['año', df['venta_fecha'].dt.month]).agg({'detalle_valor_total': 'sum'}).reset_index()
     ventas_mensuales.columns = ['año', 'mes', 'detalle_valor_total']
     fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total', color='año',
                    labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'})
 else:
-    if mes_seleccionado:  # si mes está seleccionado, filtra solo ese mes
+    if mes_seleccionado:
         df_mes = df_anual[df_anual['mes'] == mes_seleccionado]
         total_mes = df_mes.groupby(df_mes['venta_fecha'].dt.day).agg({'detalle_valor_total': 'sum'}).reset_index()
         total_mes.columns = ['día', 'detalle_valor_total']
@@ -69,9 +66,7 @@ else:
         ventas_mensuales.columns = ['mes', 'detalle_valor_total']
         fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total',
                        labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
-
 st.plotly_chart(fig1, use_container_width=True)
-
 
 # --- KPIs
 st.markdown("### 📌 Indicadores Clave")
@@ -124,6 +119,7 @@ fig5 = px.line(ingresos_vs_pagos, x='venta_fecha',
 
 fig5.update_layout(legend_title_text='')
 st.plotly_chart(fig5, use_container_width=True)
+
 
 
 
