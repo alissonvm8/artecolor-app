@@ -108,18 +108,22 @@ fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
 
-# --- Gráfico 5: Ingresos Netos vs Pagos Recibidos
-st.subheader("Ingresos Netos vs Pagos Recibidos")
-ingresos_vs_pagos = df_anual.groupby(df_anual['venta_fecha'].dt.to_period("M"))[['venta_valor_neto', 'venta_valor_pagado']].sum().reset_index()
-ingresos_vs_pagos['venta_fecha'] = ingresos_vs_pagos['venta_fecha'].astype(str)
+# --- Gráfico 5: Top 10 Productos Más Vendidos por Cantidad
+st.subheader("📦 Top 10 Productos Más Vendidos por Cantidad")
+productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
+productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
+fig6 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
+              orientation='h', labels={'detalle_cantidad': 'Cantidad Vendida', 'producto_nombre': 'Producto'})
+st.plotly_chart(fig6, use_container_width=True)
 
-fig5 = px.line(ingresos_vs_pagos, x='venta_fecha',
-               y=['venta_valor_neto', 'venta_valor_pagado'],
-               labels={'value': 'USD', 'variable': 'Tipo de Valor', 'venta_fecha': 'Mes'},
-               title='Comparación Mensual: Ventas Netas vs Pagos Recibidos')
+# --- Gráfico 6: Clientes Más Frecuentes (por cantidad comprada)
+st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
+clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
+clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
+fig7 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
+              orientation='h', labels={'detalle_cantidad': 'Cantidad Comprada', 'cliente_nombre': 'Cliente'})
+st.plotly_chart(fig7, use_container_width=True)
 
-fig5.update_layout(legend_title_text='')
-st.plotly_chart(fig5, use_container_width=True)
 
 
 
