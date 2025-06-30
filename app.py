@@ -48,7 +48,7 @@ else:
 
 # --- KPIs
 st.markdown("### Indicadores Clave")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("Ventas Totales", f"${df_anual['detalle_valor_total'].sum():,.2f}")
 with col2:
@@ -57,6 +57,9 @@ with col2:
 with col3:
     ticket = df_anual['detalle_valor_total'].sum() / transacciones if transacciones else 0
     st.metric("Ticket Promedio", f"${ticket:,.2f}")
+with col4:
+    clientes_unicos = df_anual['cliente_nombre'].nunique()
+    st.metric("Cantidad de Clientes", clientes_unicos)
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("Ventas Totales por Mes")
