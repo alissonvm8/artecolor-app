@@ -88,14 +88,6 @@ fig2 = px.bar(ventas_sucursal, x='sucursal_nombre', y='detalle_valor_total',
               labels={'sucursal_nombre': 'Sucursal', 'detalle_valor_total': 'Ventas ($)'})
 st.plotly_chart(fig2, use_container_width=True)
 
-# --- Gráfico 3: Top 10 Productos Más Vendidos
-st.subheader("Top 10 Productos Más Vendidos por Valor")
-productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
-productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
-fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
-              orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
-st.plotly_chart(fig3, use_container_width=True)
-
 # --- Gráfico 4: Clientes con Mayor Monto Comprado
 st.subheader("Clientes con Mayor Monto Comprado")
 if año_seleccionado != "Todos":
@@ -108,6 +100,14 @@ fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
               orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
 st.plotly_chart(fig4, use_container_width=True)
 
+# --- Gráfico 6: Clientes Más Frecuentes (por cantidad comprada)
+st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
+clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
+clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
+fig7 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
+              orientation='h', labels={'detalle_cantidad': 'Cantidad Comprada', 'cliente_nombre': 'Cliente'})
+st.plotly_chart(fig7, use_container_width=True)
+
 # --- Gráfico 5: Top 10 Productos Más Vendidos por Cantidad
 st.subheader("📦 Top 10 Productos Más Vendidos por Cantidad")
 productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
@@ -116,13 +116,14 @@ fig6 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
               orientation='h', labels={'detalle_cantidad': 'Cantidad Vendida', 'producto_nombre': 'Producto'})
 st.plotly_chart(fig6, use_container_width=True)
 
-# --- Gráfico 6: Clientes Más Frecuentes (por cantidad comprada)
-st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
-clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
-clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
-fig7 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
-              orientation='h', labels={'detalle_cantidad': 'Cantidad Comprada', 'cliente_nombre': 'Cliente'})
-st.plotly_chart(fig7, use_container_width=True)
+# --- Gráfico 3: Top 10 Productos Más Vendidos
+st.subheader("Top 10 Productos Más Vendidos por Valor")
+productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
+fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
+              orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
+st.plotly_chart(fig3, use_container_width=True)
+
 
 
 
