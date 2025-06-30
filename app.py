@@ -47,7 +47,7 @@ else:
     df_filtrado = df.copy()
 
 # --- KPIs
-st.markdown("### 📌 Indicadores Clave")
+st.markdown("### Indicadores Clave")
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Ventas Totales", f"${df_anual['detalle_valor_total'].sum():,.2f}")
@@ -59,7 +59,7 @@ with col3:
     st.metric("Ticket Promedio", f"${ticket:,.2f}")
 
 # --- Gráfico 1: Ventas Totales por Mes
-st.subheader("📈 Ventas Totales por Mes")
+st.subheader("Ventas Totales por Mes")
 if año_seleccionado == "Todos":
     ventas_mensuales = df.groupby(['año', df['venta_fecha'].dt.month]).agg({'detalle_valor_total': 'sum'}).reset_index()
     ventas_mensuales.columns = ['año', 'mes', 'detalle_valor_total']
@@ -82,14 +82,14 @@ st.plotly_chart(fig1, use_container_width=True)
 
 
 # --- Gráfico 2: Ventas por Sucursal
-st.subheader("🏬 Ventas por Sucursal")
+st.subheader("Ventas por Sucursal")
 ventas_sucursal = df_filtrado.groupby('sucursal_nombre')['detalle_valor_total'].sum().reset_index()
 fig2 = px.bar(ventas_sucursal, x='sucursal_nombre', y='detalle_valor_total',
               labels={'sucursal_nombre': 'Sucursal', 'detalle_valor_total': 'Ventas ($)'})
 st.plotly_chart(fig2, use_container_width=True)
 
 # --- Gráfico 3: Top 10 Productos Más Vendidos
-st.subheader("📦 Top 10 Productos Más Vendidos por Valor")
+st.subheader("Top 10 Productos Más Vendidos por Valor")
 productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
 productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
 fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
@@ -97,7 +97,7 @@ fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
 st.plotly_chart(fig3, use_container_width=True)
 
 # --- Gráfico 4: Clientes con Mayor Monto Comprado
-st.subheader("👤 Clientes con Mayor Monto Comprado")
+st.subheader("Clientes con Mayor Monto Comprado")
 if año_seleccionado != "Todos":
     clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
 else:
@@ -109,7 +109,7 @@ fig4 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
 st.plotly_chart(fig4, use_container_width=True)
 
 # --- Gráfico 5: Ingresos Netos vs Pagos Recibidos
-st.subheader("💰 Ingresos Netos vs Pagos Recibidos")
+st.subheader("Ingresos Netos vs Pagos Recibidos")
 ingresos_vs_pagos = df_anual.groupby(df_anual['venta_fecha'].dt.to_period("M"))[['venta_valor_neto', 'venta_valor_pagado']].sum().reset_index()
 ingresos_vs_pagos['venta_fecha'] = ingresos_vs_pagos['venta_fecha'].astype(str)
 
