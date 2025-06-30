@@ -46,6 +46,18 @@ else:
     df_anual = df.copy()
     df_filtrado = df.copy()
 
+# --- KPIs
+st.markdown("### 📌 Indicadores Clave")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Ventas Totales", f"${df_anual['detalle_valor_total'].sum():,.2f}")
+with col2:
+    transacciones = df_anual['venta_numero'].nunique()
+    st.metric("N° Transacciones", transacciones)
+with col3:
+    ticket = df_anual['detalle_valor_total'].sum() / transacciones if transacciones else 0
+    st.metric("Ticket Promedio", f"${ticket:,.2f}")
+
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("📈 Ventas Totales por Mes")
 if año_seleccionado == "Todos":
@@ -68,17 +80,6 @@ else:
                        labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
 st.plotly_chart(fig1, use_container_width=True)
 
-# --- KPIs
-st.markdown("### 📌 Indicadores Clave")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Ventas Totales", f"${df_anual['detalle_valor_total'].sum():,.2f}")
-with col2:
-    transacciones = df_anual['venta_numero'].nunique()
-    st.metric("N° Transacciones", transacciones)
-with col3:
-    ticket = df_anual['detalle_valor_total'].sum() / transacciones if transacciones else 0
-    st.metric("Ticket Promedio", f"${ticket:,.2f}")
 
 # --- Gráfico 2: Ventas por Sucursal
 st.subheader("🏬 Ventas por Sucursal")
