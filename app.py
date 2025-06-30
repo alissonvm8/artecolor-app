@@ -29,7 +29,7 @@ else:
     st.sidebar.markdown("👉 *Filtro de mes no disponible cuando se selecciona 'Todos los años'*")
 
 # Chatbot integrado
-
+"""
     with st.sidebar:
         st.markdown("---")
         st.markdown("### 🤖 Asistente de Ventas")
@@ -40,11 +40,7 @@ else:
         height=600,
         width=300
     )
-
-
-    
-
-    
+"""
 # Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
