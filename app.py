@@ -135,7 +135,7 @@ fig2 = px.bar(ventas_sucursal, x='sucursal_nombre', y='detalle_valor_total',
 st.plotly_chart(fig2, use_container_width=True)
 
 # --- Gráfico 3: Top 10 Productos Más Vendidos por Valor
-st.subheader("📦 Top 10 Productos por Valor")
+st.subheader("Top 10 Productos por Valor")
 productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
 productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
 fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
@@ -143,7 +143,7 @@ fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
 st.plotly_chart(fig3, use_container_width=True)
 
 # --- Gráfico 4: Top 10 Productos por Cantidad
-st.subheader("📦 Top 10 Productos por Cantidad Vendida")
+st.subheader(" Top 10 Productos por Cantidad Vendida")
 productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
 productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
 fig4 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
