@@ -30,6 +30,9 @@ nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 with st.sidebar:
     st.markdown("## Filtros")
 
+    sucursales_disponibles = sorted(df['sucursal_nombre'].dropna().unique())
+    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + list(sucursales_disponibles))
+
     años_disponibles = sorted(df['año'].unique())
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
@@ -41,8 +44,6 @@ with st.sidebar:
     else:
         mes_seleccionado = None
 
-    sucursales_disponibles = sorted(df['sucursal_nombre'].dropna().unique())
-    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + list(sucursales_disponibles))
 
     st.markdown("---")
     st.markdown("### 🤖 Asistente de Ventas")
