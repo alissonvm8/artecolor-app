@@ -60,7 +60,7 @@ nuevos_clientes = [cliente for cliente in clientes_actuales if cliente not in cl
 cantidad_nuevos_clientes = len(nuevos_clientes)
 
 # KPIs con 4 columnas
-col1, col2, col3, col4, col5 = st.columns([1.5, 1, 1, 1, 1, 1])
+col1, col_spacer, col2, col3, col4, col5 = st.columns([1.5, 0.3, 1, 1, 1, 1])
 
 with col1:
     ventas_totales = df_anual['detalle_valor_total'].sum()
