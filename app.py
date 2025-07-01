@@ -64,7 +64,7 @@ col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     ventas_totales = df_anual['detalle_valor_total'].sum()
-    st.metric("Ventas Totales", f"${ventas_totales:,.2f}")
+    st.metric("Ventas Totales    ", f"${ventas_totales:,.2f}")
 
 with col2:
     transacciones = df_anual['venta_numero'].nunique()
