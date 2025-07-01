@@ -27,22 +27,30 @@ nombre_meses = {
 nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
 # Sidebar: filtros
+
+# Sidebar: Filtros
 with st.sidebar:
     st.markdown("## Filtros")
 
-    sucursales_disponibles = sorted(df['sucursal_nombre'].dropna().unique())
-    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + list(sucursales_disponibles))
-
+    # Filtro Año
     años_disponibles = sorted(df['año'].unique())
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
+    # Filtro Mes
     if año_seleccionado != "Todos":
         meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
-        meses_nombres = ["Todos"] + [nombre_meses[m] for m in meses_disponibles]
-        mes_nombre_seleccionado = st.selectbox("Selecciona el mes", meses_nombres)
+        opciones_meses = ["Todos"] + [nombre_meses[m] for m in meses_disponibles]
+        mes_nombre_seleccionado = st.selectbox("Selecciona el mes", opciones_meses)
         mes_seleccionado = nombre_a_numero[mes_nombre_seleccionado] if mes_nombre_seleccionado != "Todos" else None
     else:
         mes_seleccionado = None
+
+    # Filtro Sucursal (VALIDADO Y FUNCIONAL)
+    sucursales_disponibles = sorted(df['sucursal_nombre'].dropna().unique().tolist())
+    if sucursales_disponibles:
+        sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + sucursales_disponibles)
+    else:
+        sucursal_seleccionada = "Todas"
 
 
     st.markdown("---")
