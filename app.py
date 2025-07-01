@@ -63,7 +63,7 @@ cantidad_nuevos_clientes = len(nuevos_clientes)
 col1, col_spacer, col2, col3, col4, col5 = st.columns([1.5, 0.3, 1, 1, 1, 1])
 
 with col1:
-    ventas_totales = df_anual['detalle_valor_total'].sum()
+    ventas_totales = df_filtrado['detalle_valor_total'].sum()
     st.metric("Ventas Totales    ", f"${ventas_totales:,.2f}")
 
 with col2:
