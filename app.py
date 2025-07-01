@@ -74,7 +74,7 @@ clientes_unicos = df_filtrado['cliente_nombre'].nunique()
 unidades_vendidas = df_filtrado['detalle_cantidad'].sum()
 
 # Mostrar los KPIs en una sola fila
-col1, , col2, col3, col4, col5 = st.columns([1.3, 1, 1, 1, 1])
+col1, , col2, col3, col4, col5 = st.columns([1.3, 0.8, 0.8, 0.8, 0.8])
 
 
 
