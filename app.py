@@ -51,17 +51,48 @@ with st.sidebar:
         width=400
     )
 
+# Sidebar: Filtros y Chatbot
+sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
+with st.sidebar:
+    st.markdown("## Filtros")
+    
+    año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
-# Filtrado de datos
-if año_seleccionado != "Todos":
-    df_anual = df[df['año'] == año_seleccionado]
-    if mes_seleccionado:
-        df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    if año_seleccionado != "Todos":
+        meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
+        mes_nombre_map = {i: pd.to_datetime(str(i), format="%m").strftime("%B") for i in meses_disponibles}
+        mes_seleccionado = st.selectbox("Selecciona el mes", ["Todos"] + [mes_nombre_map[m] for m in meses_disponibles])
+        if mes_seleccionado != "Todos":
+            mes_numero = list(mes_nombre_map.keys())[list(mes_nombre_map.values()).index(mes_seleccionado)]
+        else:
+            mes_numero = None
     else:
-        df_filtrado = df_anual.copy()
-else:
-    df_anual = df.copy()
-    df_filtrado = df.copy()
+        mes_numero = None
+        mes_seleccionado = "Todos"
+
+    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + sucursales_disponibles)
+
+    st.markdown("---")
+    st.markdown("### 🤖 Asistente de Ventas")
+    st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
+    components.iframe(
+        src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
+        height=600,
+        width=300
+    )
+
+
+
+# Aplicar filtros combinados
+df_filtrado = df.copy()
+
+if año_seleccionado != "Todos":
+    df_filtrado = df_filtrado[df_filtrado['año'] == año_seleccionado]
+if mes_seleccionado != "Todos":
+    df_filtrado = df_filtrado[df_filtrado['mes'] == mes_numero]
+if sucursal_seleccionada != "Todas":
+    df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
+
 
 
 # --- KPIs considerando año y mes (df_filtrado)
@@ -94,26 +125,39 @@ with col5:
     st.metric("Unidades Vendidas", f"{unidades_vendidas:,}")
 
 
-# --- Gráfico 1: Ventas Totales por Mes
-st.subheader("Ventas Totales por Mes")
+# --- Gráfico 1: Ventas Totales por Mes o Día
+st.subheader("📈 Ventas Totales por Mes")
+
 if año_seleccionado == "Todos":
-    ventas_mensuales = df.groupby(['año', df['venta_fecha'].dt.month]).agg({'detalle_valor_total': 'sum'}).reset_index()
-    ventas_mensuales.columns = ['año', 'mes', 'detalle_valor_total']
-    fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total', color='año',
-                   labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'})
-else:
-    if mes_seleccionado:
-        df_mes = df_anual[df_anual['mes'] == mes_seleccionado]
-        total_mes = df_mes.groupby(df_mes['venta_fecha'].dt.day).agg({'detalle_valor_total': 'sum'}).reset_index()
-        total_mes.columns = ['día', 'detalle_valor_total']
-        fig1 = px.bar(total_mes, x='día', y='detalle_valor_total',
-                      labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'},
-                      title=f"Ventas Diarias - {mes_seleccionado}/{año_seleccionado}")
+    # Agrupar por año, mes y sucursal si se selecciona "Todas" las sucursales
+    if sucursal_seleccionada == "Todas":
+        ventas_agrupadas = df_filtrado.groupby(['año', 'mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
+        fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
+                       facet_col='año',
+                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
     else:
-        ventas_mensuales = df_anual.groupby(df_anual['venta_fecha'].dt.month).agg({'detalle_valor_total': 'sum'}).reset_index()
-        ventas_mensuales.columns = ['mes', 'detalle_valor_total']
-        fig1 = px.line(ventas_mensuales, x='mes', y='detalle_valor_total',
-                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+        ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
+        fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='año',
+                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'})
+else:
+    if mes_seleccionado == "Todos":
+        # Agrupamos por mes y sucursal (o solo mes) dependiendo si se seleccionó "Todas" las sucursales o no
+        if sucursal_seleccionada == "Todas":
+            ventas_agrupadas = df_filtrado.groupby(['mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
+            fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
+                           labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
+        else:
+            ventas_agrupadas = df_filtrado.groupby('mes')['detalle_valor_total'].sum().reset_index()
+            fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total',
+                           labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+    else:
+        # Mostrar ventas diarias para un mes específico
+        ventas_diarias = df_filtrado.groupby(df_filtrado['venta_fecha'].dt.day)['detalle_valor_total'].sum().reset_index()
+        ventas_diarias.columns = ['día', 'detalle_valor_total']
+        fig1 = px.bar(ventas_diarias, x='día', y='detalle_valor_total',
+                      labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'},
+                      title=f"Ventas Diarias - {mes_seleccionado} {año_seleccionado}")
+        
 st.plotly_chart(fig1, use_container_width=True)
 
 
