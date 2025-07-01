@@ -19,32 +19,50 @@ df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
 # Sidebar: Filtros y Chatbot
 años_disponibles = sorted(df['año'].unique())
+nombre_meses = {
+    1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+    5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+    9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+}
+nombre_a_numero = {v: k for k, v in nombre_meses.items()}  # inverso para filtrar
 
 with st.sidebar:
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
     if año_seleccionado != "Todos":
         meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
-        mes_seleccionado = st.selectbox("Selecciona el mes", meses_disponibles)
+        opciones_meses = ["Todos"] + [nombre_meses[m] for m in meses_disponibles]
+        mes_nombre_seleccionado = st.selectbox("Selecciona el mes", opciones_meses)
+
+        # Convertimos el nombre del mes a número si no es "Todos"
+        if mes_nombre_seleccionado != "Todos":
+            mes_seleccionado = nombre_a_numero[mes_nombre_seleccionado]
+        else:
+            mes_seleccionado = None
     else:
         mes_seleccionado = None
 
     st.markdown("---")
-    st.markdown("### 🤖 Asistente de Ventas")
+    st.markdown("###  Asistente de Ventas")
     st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
     components.iframe(
         src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
         height=600,
-        width=300
+        width=400
     )
+
 
 # Filtrado de datos
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
-    df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    if mes_seleccionado:
+        df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    else:
+        df_filtrado = df_anual.copy()
 else:
     df_anual = df.copy()
     df_filtrado = df.copy()
+
 
 # --- KPIs considerando año y mes (df_filtrado)
 st.markdown("### Indicadores Clave")
