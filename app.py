@@ -72,9 +72,34 @@ with col2:
 with col3:
     ticket = df_anual['detalle_valor_total'].sum() / transacciones if transacciones else 0
     st.metric("Ticket Promedio", f"${ticket:,.2f}")
-
+    
+    # --- KPI: Nuevos Clientes (mensual o anual)
 with col4:
-    st.metric("Nuevos Clientes", cantidad_nuevos_clientes)
+
+    if año_seleccionado != "Todos" and mes_seleccionado:
+        # Clientes únicos con compras por primera vez en ese mes
+        df_anterior = df[(df['venta_fecha'] < pd.Timestamp(año_seleccionado, mes_seleccionado, 1))]
+        df_mes_actual = df_filtrado
+
+        clientes_previos = set(df_anterior['cliente_nombre'].unique())
+        clientes_actuales = set(df_mes_actual['cliente_nombre'].unique())
+        nuevos_clientes_mes = clientes_actuales - clientes_previos
+
+        st.metric("Nuevos Clientes", len(nuevos_clientes_mes))
+        
+    elif año_seleccionado != "Todos":
+        # Clientes que compran por primera vez en ese año
+        df_anterior = df[df['año'] < año_seleccionado]
+        df_actual = df[df['año'] == año_seleccionado]
+
+        clientes_previos = set(df_anterior['cliente_nombre'].unique())
+        clientes_actuales = set(df_actual['cliente_nombre'].unique())
+        nuevos_clientes_año = clientes_actuales - clientes_previos
+
+        st.metric("Nuevos Clientes", len(nuevos_clientes_año))
+    else:
+        st.metric("Nuevos Clientes", "N/A")
+
 
 
 # --- Gráfico 1: Ventas Totales por Mes
