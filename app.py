@@ -63,16 +63,11 @@ with st.sidebar:
     )
 
 # Aplicar filtros combinados
-df_filtrado = df.copy()
-
-if año_seleccionado != "Todos":
-    df_filtrado = df_filtrado[df_filtrado['año'] == año_seleccionado]
-if mes_seleccionado is not None:
-    df_filtrado = df_filtrado[df_filtrado['mes'] == mes_seleccionado]
-if sucursal_seleccionada != "Todas":
-    df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
 
 # Filtrado de datos
+if sucursal_seleccionada != "Todas":
+    df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
+    
 if año_seleccionado != "Todos":
     df_anual = df[df['año'] == año_seleccionado]
     if mes_seleccionado:
@@ -83,8 +78,7 @@ else:
     df_anual = df.copy()
     df_filtrado = df.copy()
 
-if sucursal_seleccionada != "Todas":
-    df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
+
 
 # KPIs
 st.markdown("### Indicadores Clave")
