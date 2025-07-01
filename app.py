@@ -46,42 +46,33 @@ else:
     df_anual = df.copy()
     df_filtrado = df.copy()
 
-# --- KPIs
+# --- KPIs considerando año y mes (df_filtrado)
 st.markdown("### Indicadores Clave")
 
-# Obtener clientes únicos de años anteriores
-clientes_previos = df[df['año'] < año_seleccionado]['cliente_nombre'].unique() if año_seleccionado != "Todos" else []
+ventas_totales = df_filtrado['detalle_valor_total'].sum()
+transacciones = df_filtrado['venta_numero'].nunique()
+ticket = ventas_totales / transacciones if transacciones else 0
+clientes_unicos = df_filtrado['cliente_nombre'].nunique()
+unidades_vendidas = df_filtrado['detalle_cantidad'].sum()
 
-# Filtrar clientes del año actual
-clientes_actuales = df_anual['cliente_nombre'].unique()
-
-# Identificar nuevos clientes en el año actual
-nuevos_clientes = [cliente for cliente in clientes_actuales if cliente not in clientes_previos]
-cantidad_nuevos_clientes = len(nuevos_clientes)
-
-# KPIs con 4 columnas
-col1, col_spacer, col2, col3, col4, col5 = st.columns([1.5, 0.3, 1, 1, 1, 1])
+# Mostrar los KPIs en una sola fila
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    ventas_totales = df_filtrado['detalle_valor_total'].sum()
-    st.metric("Ventas Totales    ", f"${ventas_totales:,.2f}")
+    st.metric("Ventas Totales", f"${ventas_totales:,.2f}")
 
 with col2:
-    transacciones = df_anual['venta_numero'].nunique()
     st.metric("N° Transacciones", transacciones)
 
 with col3:
-    ticket = ventas_totales / transacciones if transacciones else 0
     st.metric("Ticket Promedio", f"${ticket:,.2f}")
 
 with col4:
-    clientes_unicos = df_anual['cliente_nombre'].nunique()
     st.metric("Clientes Únicos", clientes_unicos)
 
 with col5:
-    unidades_vendidas = df_anual['detalle_cantidad'].sum()
-    st.metric("Unidades Vendidas", f"{unidades_vendidas:,.0f}")
-    
+    st.metric("Unidades Vendidas", f"{unidades_vendidas:,}")
+
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("Ventas Totales por Mes")
