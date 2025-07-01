@@ -60,47 +60,28 @@ nuevos_clientes = [cliente for cliente in clientes_actuales if cliente not in cl
 cantidad_nuevos_clientes = len(nuevos_clientes)
 
 # KPIs con 4 columnas
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("Ventas Totales", f"${df_anual['detalle_valor_total'].sum():,.2f}")
+    ventas_totales = df_anual['detalle_valor_total'].sum()
+    st.metric("Ventas Totales", f"${ventas_totales:,.2f}")
 
 with col2:
     transacciones = df_anual['venta_numero'].nunique()
     st.metric("N° Transacciones", transacciones)
 
 with col3:
-    ticket = df_anual['detalle_valor_total'].sum() / transacciones if transacciones else 0
+    ticket = ventas_totales / transacciones if transacciones else 0
     st.metric("Ticket Promedio", f"${ticket:,.2f}")
-    
-    # --- KPI: Nuevos Clientes (mensual o anual)
+
 with col4:
+    clientes_unicos = df_anual['cliente_nombre'].nunique()
+    st.metric("Clientes Únicos", clientes_unicos)
 
-    if año_seleccionado != "Todos" and mes_seleccionado:
-        # Clientes únicos con compras por primera vez en ese mes
-        df_anterior = df[(df['venta_fecha'] < pd.Timestamp(año_seleccionado, mes_seleccionado, 1))]
-        df_mes_actual = df_filtrado
-
-        clientes_previos = set(df_anterior['cliente_nombre'].unique())
-        clientes_actuales = set(df_mes_actual['cliente_nombre'].unique())
-        nuevos_clientes_mes = clientes_actuales - clientes_previos
-
-        st.metric("Nuevos Clientes", len(nuevos_clientes_mes))
-        
-    elif año_seleccionado != "Todos":
-        # Clientes que compran por primera vez en ese año
-        df_anterior = df[df['año'] < año_seleccionado]
-        df_actual = df[df['año'] == año_seleccionado]
-
-        clientes_previos = set(df_anterior['cliente_nombre'].unique())
-        clientes_actuales = set(df_actual['cliente_nombre'].unique())
-        nuevos_clientes_año = clientes_actuales - clientes_previos
-
-        st.metric("Nuevos Clientes", len(nuevos_clientes_año))
-    else:
-        st.metric("Nuevos Clientes", "N/A")
-
-
+with col5:
+    unidades_vendidas = df_anual['detalle_cantidad'].sum()
+    st.metric("Unidades Vendidas", f"{unidades_vendidas:,.0f}")
+    
 
 # --- Gráfico 1: Ventas Totales por Mes
 st.subheader("Ventas Totales por Mes")
