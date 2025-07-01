@@ -72,6 +72,20 @@ if mes_seleccionado is not None:
 if sucursal_seleccionada != "Todas":
     df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
 
+# Filtrado de datos
+if año_seleccionado != "Todos":
+    df_anual = df[df['año'] == año_seleccionado]
+    if mes_seleccionado:
+        df_filtrado = df_anual[df_anual['mes'] == mes_seleccionado]
+    else:
+        df_filtrado = df_anual.copy()
+else:
+    df_anual = df.copy()
+    df_filtrado = df.copy()
+
+if sucursal_seleccionada != "Todas":
+    df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
+
 # KPIs
 st.markdown("### Indicadores Clave")
 ventas_totales = df_filtrado['detalle_valor_total'].sum()
