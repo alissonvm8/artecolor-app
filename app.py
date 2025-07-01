@@ -28,6 +28,8 @@ nombre_meses = {
 }
 nombre_a_numero = {v: k for k, v in nombre_meses.items()}  # inverso
 
+
+# Sidebar: Filtros y Chatbot
 with st.sidebar:
     st.markdown("## Filtros")
 
@@ -39,14 +41,13 @@ with st.sidebar:
         meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
         opciones_meses = ["Todos"] + [nombre_meses[m] for m in meses_disponibles]
         mes_nombre_seleccionado = st.selectbox("Selecciona el mes", opciones_meses)
-
-        # Convertimos el nombre del mes a número si no es "Todos"
-        if mes_nombre_seleccionado != "Todos":
-            mes_seleccionado = nombre_a_numero[mes_nombre_seleccionado]
-        else:
-            mes_seleccionado = None
+        mes_seleccionado = nombre_a_numero[mes_nombre_seleccionado] if mes_nombre_seleccionado != "Todos" else None
     else:
         mes_seleccionado = None
+
+    # Asegurar que los nombres de sucursal sean válidos
+    df['sucursal_nombre'] = df['sucursal_nombre'].astype(str)
+    sucursales_disponibles = sorted(df['sucursal_nombre'].dropna().unique().tolist())
 
     # Filtro de Sucursal
     sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + sucursales_disponibles)
