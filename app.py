@@ -27,9 +27,8 @@ nombre_meses = {
 nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
 # Sidebar: filtros
-
 with st.sidebar:
-    # Filtro de sucursal (aparece siempre)
+    # Filtro de sucursal
     sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
     sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas las sucursales"] + sucursales_disponibles)
 
@@ -37,7 +36,7 @@ with st.sidebar:
     años_disponibles = sorted(df['año'].unique())
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos los años"] + años_disponibles)
 
-    # Filtro de mes (con nombre y opción "Todos los meses")
+    # Filtro de mes (con nombres y opción predeterminada)
     if año_seleccionado != "Todos los años":
         df_anyo = df[df['año'] == año_seleccionado]
         meses_disponibles = sorted(df_anyo['mes'].unique())
@@ -62,7 +61,7 @@ with st.sidebar:
         width=300
     )
 
-# Aplicar filtros a los datos
+# Aplicar filtros
 if año_seleccionado != "Todos los años":
     df_anual = df[df['año'] == año_seleccionado]
     df_filtrado = df_anual.copy()
@@ -72,11 +71,9 @@ else:
     df_anual = df.copy()
     df_filtrado = df.copy()
 
-# Aplicar filtro de sucursal
 if sucursal_seleccionada != "Todas las sucursales":
     df_anual = df_anual[df_anual['sucursal_nombre'] == sucursal_seleccionada]
     df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
-
 
 # KPIs
 st.markdown("### Indicadores Clave")
