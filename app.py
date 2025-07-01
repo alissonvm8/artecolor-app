@@ -29,16 +29,20 @@ nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 # Sidebar: filtros
 
 with st.sidebar:
+    # Filtro de sucursal (aparece siempre)
+    sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
+    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas las sucursales"] + sucursales_disponibles)
+
     # Filtro de año
     años_disponibles = sorted(df['año'].unique())
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos los años"] + años_disponibles)
 
-    # Filtro de mes (con opción "Todos los meses" si se elige un año específico)
+    # Filtro de mes (con nombre y opción "Todos los meses")
     if año_seleccionado != "Todos los años":
         df_anyo = df[df['año'] == año_seleccionado]
         meses_disponibles = sorted(df_anyo['mes'].unique())
-        meses_nombres = [pd.to_datetime(str(m), format='%m').strftime('%B') for m in meses_disponibles]
-        mes_nombre_a_numero = dict(zip(meses_nombres, meses_disponibles))
+        meses_nombres = [nombre_meses[m] for m in meses_disponibles]
+        mes_nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
         mes_nombre_seleccionado = st.selectbox("Selecciona el mes", ["Todos los meses"] + meses_nombres)
         if mes_nombre_seleccionado != "Todos los meses":
@@ -47,10 +51,6 @@ with st.sidebar:
             mes_seleccionado = None
     else:
         mes_seleccionado = None
-
-    # Filtro de sucursal
-    sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
-    sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas las sucursales"] + sucursales_disponibles)
 
     # Chatbot integrado
     st.markdown("---")
