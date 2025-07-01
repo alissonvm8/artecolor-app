@@ -68,12 +68,10 @@ df_filtrado = df.copy()
 
 if año_seleccionado != "Todos":
     df_filtrado = df_filtrado[df_filtrado['año'] == año_seleccionado]
-if mes_seleccionado != "Todos":
-    df_filtrado = df_filtrado[df_filtrado['mes'] == mes_numero]
+if mes_seleccionado is not None:
+    df_filtrado = df_filtrado[df_filtrado['mes'] == mes_seleccionado]
 if sucursal_seleccionada != "Todas":
     df_filtrado = df_filtrado[df_filtrado['sucursal_nombre'] == sucursal_seleccionada]
-
-
 
 # --- KPIs considerando año y mes (df_filtrado)
 st.markdown("### Indicadores Clave")
@@ -85,9 +83,7 @@ clientes_unicos = df_filtrado['cliente_nombre'].nunique()
 unidades_vendidas = df_filtrado['detalle_cantidad'].sum()
 
 # Mostrar los KPIs en una sola fila
-col1, , col2, col3, col4, col5 = st.columns([1.3, 0.8, 0.8, 0.8, 0.8])
-
-
+col1, col2, col3, col4, col5 = st.columns([1.3, 0.8, 0.8, 0.8, 0.8])
 
 with col1:
     st.metric("Ventas Totales", f"${ventas_totales:,.2f}")
