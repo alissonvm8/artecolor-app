@@ -19,16 +19,22 @@ df['mes_nombre'] = df['venta_fecha'].dt.strftime('%b')
 
 # Sidebar: Filtros y Chatbot
 años_disponibles = sorted(df['año'].unique())
+sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
+
 nombre_meses = {
     1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
     5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
     9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
 }
-nombre_a_numero = {v: k for k, v in nombre_meses.items()}  # inverso para filtrar
+nombre_a_numero = {v: k for k, v in nombre_meses.items()}  # inverso
 
 with st.sidebar:
+    st.markdown("## Filtros")
+
+    # Filtro de Año
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
 
+    # Filtro de Mes (con nombres)
     if año_seleccionado != "Todos":
         meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
         opciones_meses = ["Todos"] + [nombre_meses[m] for m in meses_disponibles]
@@ -42,36 +48,10 @@ with st.sidebar:
     else:
         mes_seleccionado = None
 
-    st.markdown("---")
-    st.markdown("###  Asistente de Ventas")
-    st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
-    components.iframe(
-        src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
-        height=600,
-        width=400
-    )
-
-# Sidebar: Filtros y Chatbot
-sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
-with st.sidebar:
-    st.markdown("## Filtros")
-    
-    año_seleccionado = st.selectbox("Selecciona el año", ["Todos"] + años_disponibles)
-
-    if año_seleccionado != "Todos":
-        meses_disponibles = sorted(df[df['año'] == año_seleccionado]['mes'].unique())
-        mes_nombre_map = {i: pd.to_datetime(str(i), format="%m").strftime("%B") for i in meses_disponibles}
-        mes_seleccionado = st.selectbox("Selecciona el mes", ["Todos"] + [mes_nombre_map[m] for m in meses_disponibles])
-        if mes_seleccionado != "Todos":
-            mes_numero = list(mes_nombre_map.keys())[list(mes_nombre_map.values()).index(mes_seleccionado)]
-        else:
-            mes_numero = None
-    else:
-        mes_numero = None
-        mes_seleccionado = "Todos"
-
+    # Filtro de Sucursal
     sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas"] + sucursales_disponibles)
 
+    # Chatbot
     st.markdown("---")
     st.markdown("### 🤖 Asistente de Ventas")
     st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
