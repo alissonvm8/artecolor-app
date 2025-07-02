@@ -26,19 +26,8 @@ nombre_meses = {
 }
 nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
-# Sidebar reorganizado: primero chatbot, luego filtros
+# Sidebar: filtros y asistente conversacional
 with st.sidebar:
-    # Chatbot integrado - más arriba
-    st.markdown("### 🤖 Asistente de Ventas")
-    st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
-    components.iframe(
-        src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
-        height=480,
-        width=300
-    )
-
-    st.markdown("---")  # Separador visual
-
     # Filtro de sucursal
     sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
     sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas las sucursales"] + sucursales_disponibles)
@@ -61,6 +50,18 @@ with st.sidebar:
             mes_seleccionado = None
     else:
         mes_seleccionado = None
+
+    # Separador más corto
+    st.markdown(" ")
+
+    # Chatbot integrado: se mantiene visible sin bajar tanto
+    st.markdown("### 🤖 Asistente de Ventas")
+    st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
+    components.iframe(
+        src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
+        height=440,
+        width=300
+    )
 
 
 # Aplicar filtros
