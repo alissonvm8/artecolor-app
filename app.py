@@ -59,7 +59,7 @@ with st.sidebar:
     st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
     components.iframe(
         src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
-        height=400,
+        height=430,
         width=600
     )
     
