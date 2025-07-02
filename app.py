@@ -26,7 +26,8 @@ nombre_meses = {
 }
 nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
-# Sidebar: filtros y asistente conversacional
+
+# Sidebar: filtros
 with st.sidebar:
     # Filtro de sucursal
     sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
@@ -36,7 +37,7 @@ with st.sidebar:
     años_disponibles = sorted(df['año'].unique())
     año_seleccionado = st.selectbox("Selecciona el año", ["Todos los años"] + años_disponibles)
 
-    # Filtro de mes
+    # Filtro de mes (con nombres y opción predeterminada)
     if año_seleccionado != "Todos los años":
         df_anyo = df[df['año'] == año_seleccionado]
         meses_disponibles = sorted(df_anyo['mes'].unique())
@@ -51,15 +52,13 @@ with st.sidebar:
     else:
         mes_seleccionado = None
 
-    # Separador más corto
-    st.markdown(" ")
-
-    # Chatbot integrado: se mantiene visible sin bajar tanto
+    # Chatbot integrado
+    st.markdown("---")
     st.markdown("### 🤖 Asistente de Ventas")
     st.markdown("Haz tus preguntas sobre ventas, productos o clientes usando lenguaje natural.")
     components.iframe(
         src="https://www.stack-ai.com/embed/9b857357-678c-4dfd-b342-88b2b127154a/9c2cd531-7214-48e1-b26c-f360eee236d4/685d6e70733ab95a834b5b67",
-        height=440,
+        height=600,
         width=300
     )
 
