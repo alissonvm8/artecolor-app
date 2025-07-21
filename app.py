@@ -32,7 +32,6 @@ with st.sidebar:
      # Selector de sección horizontal
     st.markdown("###  Categoría de análisis")
     seccion = st.radio(
-        "Selecciona una categoría:",
         ["Ventas", "Productos", "Clientes"],
         horizontal=True
     )
