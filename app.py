@@ -29,9 +29,13 @@ nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 # Sidebar: filtros y asistente conversacional
 with st.sidebar:
 
-    # Selector de categoría (Ventas / Productos / Clientes)
-    st.markdown("### 📂 Categoría de análisis")
-    seccion = st.radio("Selecciona una categoría:", ["Ventas", "Productos", "Clientes"])
+     # Selector de sección horizontal
+    st.markdown("###  Categoría de análisis")
+    seccion = st.radio(
+        "Selecciona una categoría:",
+        ["Ventas", "Productos", "Clientes"],
+        horizontal=True
+    )
 
     # Filtro de sucursal
     sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
