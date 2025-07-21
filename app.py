@@ -177,21 +177,26 @@ elif seccion == "Productos":
         st.plotly_chart(fig4, use_container_width=True)
 
 elif seccion == "Clientes":
-    # --- Gráfico 4: Clientes con Mayor Monto Comprado
-    st.subheader("👤 Clientes con Mayor Monto Comprado")
-    clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
-    clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
-    fig5 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
-                  orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
-    st.plotly_chart(fig5, use_container_width=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # --- Gráfico 4: Clientes con Mayor Monto Comprado
+        st.subheader("👤 Clientes con Mayor Monto Comprado")
+        clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+        clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
+        fig5 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
+                      orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
+        st.plotly_chart(fig5, use_container_width=True)
     
-    # --- Gráfico 5: Clientes Más Frecuentes por Cantidad Comprada
-    st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
-    clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
-    clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
-    fig6 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
-                  orientation='h', labels={'detalle_cantidad': 'Cantidad', 'cliente_nombre': 'Cliente'})
-    st.plotly_chart(fig6, use_container_width=True)
+    with col2:
+        # --- Gráfico 5: Clientes Más Frecuentes por Cantidad Comprada
+        st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
+        clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
+        clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
+        fig6 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
+                      orientation='h', labels={'detalle_cantidad': 'Cantidad', 'cliente_nombre': 'Cliente'})
+        st.plotly_chart(fig6, use_container_width=True)
 
 
 
