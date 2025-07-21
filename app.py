@@ -28,6 +28,11 @@ nombre_a_numero = {v: k for k, v in nombre_meses.items()}
 
 # Sidebar: filtros y asistente conversacional
 with st.sidebar:
+
+    # Selector de categoría (Ventas / Productos / Clientes)
+    st.markdown("### 📂 Categoría de análisis")
+    seccion = st.radio("Selecciona una categoría:", ["Ventas", "Productos", "Clientes"])
+
     # Filtro de sucursal
     sucursales_disponibles = sorted(df['sucursal_nombre'].unique())
     sucursal_seleccionada = st.selectbox("Selecciona la sucursal", ["Todas las sucursales"] + sucursales_disponibles)
@@ -99,9 +104,6 @@ with col4:
 with col5:
     st.metric("Unidades Vendidas", f"{unidades_vendidas:,}")
 
-# --- Selector de sección (botones)
-st.markdown("### Secciones del Dashboard")
-seccion = st.radio("Selecciona una categoría", ["Ventas", "Productos", "Clientes"], horizontal=True)
 
 
 # --- Gráfico 1: Ventas Totales por Mes o Día
