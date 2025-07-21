@@ -156,21 +156,25 @@ if seccion == "Ventas":
     st.plotly_chart(fig1, use_container_width=True)
     
 elif seccion == "Productos":
-    # --- Gráfico 2: Top 10 Productos Más Vendidos por Valor
-    st.subheader("Top 10 Productos por Valor")
-    productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
-    productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
-    fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
-                  orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
-    st.plotly_chart(fig3, use_container_width=True)
     
-    # --- Gráfico 3: Top 10 Productos por Cantidad
-    st.subheader(" Top 10 Productos por Cantidad Vendida")
-    productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
-    productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
-    fig4 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
-                  orientation='h', labels={'detalle_cantidad': 'Cantidad', 'producto_nombre': 'Producto'})
-    st.plotly_chart(fig4, use_container_width=True)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # --- Gráfico 2: Top 10 Productos Más Vendidos por Valor
+        st.subheader("Top 10 Productos por Valor")
+        productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+        productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
+        fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
+                      orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
+        st.plotly_chart(fig3, use_container_width=True)
+    with col2:
+        # --- Gráfico 3: Top 10 Productos por Cantidad
+        st.subheader(" Top 10 Productos por Cantidad Vendida")
+        productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
+        productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
+        fig4 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
+                      orientation='h', labels={'detalle_cantidad': 'Cantidad', 'producto_nombre': 'Producto'})
+        st.plotly_chart(fig4, use_container_width=True)
 
 elif seccion == "Clientes":
     # --- Gráfico 4: Clientes con Mayor Monto Comprado
