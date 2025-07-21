@@ -102,19 +102,30 @@ with col5:
 # --- Gráfico 1: Ventas Totales por Mes o Día
 st.subheader("📈 Ventas Totales")
 
-if año_seleccionado == "Todos":
-    if sucursal_seleccionada == "Todas":
-        ventas_agrupadas = df_filtrado.groupby(['año', 'mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
-        fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
-                       facet_col='año',
-                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
+if año_seleccionado == "Todos los años":
+    if sucursal_seleccionada == "Todas las sucursales":
+        ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
+        fig1 = px.line(
+            ventas_agrupadas,
+            x='mes',
+            y='detalle_valor_total',
+            color='año',
+            labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
+            title="Ventas Totales por Mes"
+        )
     else:
         ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
-        fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='año',
-                       labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'})
+        fig1 = px.line(
+            ventas_agrupadas,
+            x='mes',
+            y='detalle_valor_total',
+            color='año',
+            labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
+            title="Ventas Totales por Mes"
+        )
 else:
     if mes_seleccionado is None:
-        if sucursal_seleccionada == "Todas":
+        if sucursal_seleccionada == "Todas las sucursales":
             ventas_agrupadas = df_filtrado.groupby(['mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
             fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
                            labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
@@ -127,6 +138,7 @@ else:
         ventas_diarias.columns = ['día', 'detalle_valor_total']
         fig1 = px.bar(ventas_diarias, x='día', y='detalle_valor_total',
                       labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'})
+
         
 st.plotly_chart(fig1, use_container_width=True)
 
