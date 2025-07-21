@@ -99,80 +99,89 @@ with col4:
 with col5:
     st.metric("Unidades Vendidas", f"{unidades_vendidas:,}")
 
+# --- Selector de sección (botones)
+st.markdown("### Secciones del Dashboard")
+seccion = st.radio("Selecciona una categoría", ["Ventas", "Productos", "Clientes"], horizontal=True)
+
+
 # --- Gráfico 1: Ventas Totales por Mes o Día
-st.subheader("📈 Ventas Totales")
-
-if año_seleccionado == "Todos los años":
-    if sucursal_seleccionada == "Todas las sucursales":
-        ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
-        fig1 = px.line(
-            ventas_agrupadas,
-            x='mes',
-            y='detalle_valor_total',
-            color='año',
-            labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
-            title="Ventas Totales por Mes"
-        )
-    else:
-        ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
-        fig1 = px.line(
-            ventas_agrupadas,
-            x='mes',
-            y='detalle_valor_total',
-            color='año',
-            labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
-            title="Ventas Totales por Mes"
-        )
-else:
-    if mes_seleccionado is None:
+if seccion == "Ventas":
+    
+    st.subheader("📈 Ventas Totales")
+    
+    if año_seleccionado == "Todos los años":
         if sucursal_seleccionada == "Todas las sucursales":
-            ventas_agrupadas = df_filtrado.groupby(['mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
-            fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
-                           labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
+            ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
+            fig1 = px.line(
+                ventas_agrupadas,
+                x='mes',
+                y='detalle_valor_total',
+                color='año',
+                labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
+                title="Ventas Totales por Mes"
+            )
         else:
-            ventas_agrupadas = df_filtrado.groupby('mes')['detalle_valor_total'].sum().reset_index()
-            fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total',
-                           labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+            ventas_agrupadas = df_filtrado.groupby(['año', 'mes'])['detalle_valor_total'].sum().reset_index()
+            fig1 = px.line(
+                ventas_agrupadas,
+                x='mes',
+                y='detalle_valor_total',
+                color='año',
+                labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'año': 'Año'},
+                title="Ventas Totales por Mes"
+            )
     else:
-        ventas_diarias = df_filtrado.groupby(df_filtrado['venta_fecha'].dt.day)['detalle_valor_total'].sum().reset_index()
-        ventas_diarias.columns = ['día', 'detalle_valor_total']
-        fig1 = px.bar(ventas_diarias, x='día', y='detalle_valor_total',
-                      labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'})
+        if mes_seleccionado is None:
+            if sucursal_seleccionada == "Todas las sucursales":
+                ventas_agrupadas = df_filtrado.groupby(['mes', 'sucursal_nombre'])['detalle_valor_total'].sum().reset_index()
+                fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total', color='sucursal_nombre',
+                               labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)', 'sucursal_nombre': 'Sucursal'})
+            else:
+                ventas_agrupadas = df_filtrado.groupby('mes')['detalle_valor_total'].sum().reset_index()
+                fig1 = px.line(ventas_agrupadas, x='mes', y='detalle_valor_total',
+                               labels={'mes': 'Mes', 'detalle_valor_total': 'Ventas ($)'})
+        else:
+            ventas_diarias = df_filtrado.groupby(df_filtrado['venta_fecha'].dt.day)['detalle_valor_total'].sum().reset_index()
+            ventas_diarias.columns = ['día', 'detalle_valor_total']
+            fig1 = px.bar(ventas_diarias, x='día', y='detalle_valor_total',
+                          labels={'día': 'Día del Mes', 'detalle_valor_total': 'Ventas ($)'})
+    
+            
+    st.plotly_chart(fig1, use_container_width=True)
+    
+elif seccion == "Productos":
+    # --- Gráfico 2: Top 10 Productos Más Vendidos por Valor
+    st.subheader("Top 10 Productos por Valor")
+    productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
+    productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
+    fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
+                  orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
+    st.plotly_chart(fig3, use_container_width=True)
+    
+    # --- Gráfico 3: Top 10 Productos por Cantidad
+    st.subheader(" Top 10 Productos por Cantidad Vendida")
+    productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
+    productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
+    fig4 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
+                  orientation='h', labels={'detalle_cantidad': 'Cantidad', 'producto_nombre': 'Producto'})
+    st.plotly_chart(fig4, use_container_width=True)
 
-        
-st.plotly_chart(fig1, use_container_width=True)
-
-# --- Gráfico 2: Top 10 Productos Más Vendidos por Valor
-st.subheader("Top 10 Productos por Valor")
-productos_top = df_filtrado.groupby('producto_nombre')['detalle_valor_total'].sum().reset_index()
-productos_top = productos_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
-fig3 = px.bar(productos_top, x='detalle_valor_total', y='producto_nombre',
-              orientation='h', labels={'detalle_valor_total': 'Ventas ($)', 'producto_nombre': 'Producto'})
-st.plotly_chart(fig3, use_container_width=True)
-
-# --- Gráfico 3: Top 10 Productos por Cantidad
-st.subheader(" Top 10 Productos por Cantidad Vendida")
-productos_cantidad = df_filtrado.groupby('producto_nombre')['detalle_cantidad'].sum().reset_index()
-productos_cantidad = productos_cantidad.sort_values(by='detalle_cantidad', ascending=False).head(10)
-fig4 = px.bar(productos_cantidad, x='detalle_cantidad', y='producto_nombre',
-              orientation='h', labels={'detalle_cantidad': 'Cantidad', 'producto_nombre': 'Producto'})
-st.plotly_chart(fig4, use_container_width=True)
-
-# --- Gráfico 4: Clientes con Mayor Monto Comprado
-st.subheader("👤 Clientes con Mayor Monto Comprado")
-clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
-clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
-fig5 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
-              orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
-st.plotly_chart(fig5, use_container_width=True)
-
-# --- Gráfico 5: Clientes Más Frecuentes por Cantidad Comprada
-st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
-clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
-clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
-fig6 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
-              orientation='h', labels={'detalle_cantidad': 'Cantidad', 'cliente_nombre': 'Cliente'})
-st.plotly_chart(fig6, use_container_width=True)
+elif seccion == "Clientes":
+    # --- Gráfico 4: Clientes con Mayor Monto Comprado
+    st.subheader("👤 Clientes con Mayor Monto Comprado")
+    clientes_top = df_filtrado.groupby('cliente_nombre')['detalle_valor_total'].sum().reset_index()
+    clientes_top = clientes_top.sort_values(by='detalle_valor_total', ascending=False).head(10)
+    fig5 = px.bar(clientes_top, x='detalle_valor_total', y='cliente_nombre',
+                  orientation='h', labels={'detalle_valor_total': 'Compras ($)', 'cliente_nombre': 'Cliente'})
+    st.plotly_chart(fig5, use_container_width=True)
+    
+    # --- Gráfico 5: Clientes Más Frecuentes por Cantidad Comprada
+    st.subheader("👥 Clientes Más Frecuentes por Cantidad Comprada")
+    clientes_frecuentes = df_filtrado.groupby('cliente_nombre')['detalle_cantidad'].sum().reset_index()
+    clientes_frecuentes = clientes_frecuentes.sort_values(by='detalle_cantidad', ascending=False).head(10)
+    fig6 = px.bar(clientes_frecuentes, x='detalle_cantidad', y='cliente_nombre',
+                  orientation='h', labels={'detalle_cantidad': 'Cantidad', 'cliente_nombre': 'Cliente'})
+    st.plotly_chart(fig6, use_container_width=True)
 
 
 
